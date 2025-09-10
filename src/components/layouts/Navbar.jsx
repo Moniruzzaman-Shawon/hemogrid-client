@@ -1,3 +1,5 @@
+import { Link } from "react-router";
+
 const Navbar = () => {
   return (
     <div className="navbar bg-red-800 shadow-sm px-4 lg:px-10">
@@ -109,10 +111,20 @@ const Navbar = () => {
         </ul>
       </div>
 
-      {/* Navbar End Buttons */}
+       {/* Navbar End Buttons */}
       <div className="navbar-end gap-2">
-        <a className="btn bg-white text-red-800 hover:bg-bg-black hover:text-black transition duration-300">Register</a>
-        <a className="btn bg-white text-red-800 hover:bg-bg-black hover:text-black transition duration-300">Login</a>
+        <Link
+          to="/register"
+          className="btn bg-white text-red-800 hover:bg-black hover:text-white transition duration-300"
+        >
+          Register
+        </Link>
+        <Link
+          to="/login"
+          className="btn bg-white text-red-800 hover:bg-black hover:text-white transition duration-300"
+        >
+          Login
+        </Link>
       </div>
     </div>
   );

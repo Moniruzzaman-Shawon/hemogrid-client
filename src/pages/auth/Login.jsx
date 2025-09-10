@@ -1,65 +1,83 @@
-// src/pages/Login.jsx
+import { Link } from "react-router-dom";
 import { useState } from "react";
-import { useAuth } from "../../hooks/useAuth";
-
 
 const Login = () => {
-  const { login } = useAuth();
-  const [formData, setFormData] = useState({ email: "", password: "" });
-  const [error, setError] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e) => {
+  const handleLogin = (e) => {
     e.preventDefault();
-    setError("");
-    try {
-      await login(formData);
-      window.location.href = "/dashboard"; // or use navigate()
-    } catch (error) {
-      setError("Invalid email or password.",error);
-    }
+    // TODO: add login logic
+    console.log({ email, password });
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50">
-      <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-md">
-        <h2 className="mb-6 text-center text-2xl font-bold">Login</h2>
-        {error && <p className="mb-4 text-sm text-red-500">{error}</p>}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-            className="w-full rounded-lg border px-4 py-2 focus:ring-2 focus:ring-blue-500"
-          />
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-            className="w-full rounded-lg border px-4 py-2 focus:ring-2 focus:ring-blue-500"
-          />
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="bg-white shadow-2xl rounded-lg w-full max-w-md lg:max-w-lg p-8 lg:p-12">
+        {/* Logo */}
+        <div className="flex justify-center mb-6">
+          <svg
+            width="50"
+            height="50"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+            fillRule="evenodd"
+            clipRule="evenodd"
+            className="fill-current text-red-800"
+          >
+            <path d="M12 2C12 2 6 8 6 12s6 10 6 10 6-6 6-10-6-10-6-10zm0 14a4 4 0 1 1 0-8 4 4 0 0 1 0 8z" />
+          </svg>
+        </div>
+
+        <h2 className="text-2xl lg:text-3xl font-bold text-center text-red-800 mb-6">
+          Login to Hemogrid
+        </h2>
+
+        <form onSubmit={handleLogin} className="space-y-4">
+          <div>
+            <label className="block text-gray-700 font-semibold mb-2">Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.com"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-800 focus:border-red-800"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-gray-700 font-semibold mb-2">Password</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="********"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-800 focus:border-red-800"
+              required
+            />
+          </div>
+
           <button
             type="submit"
-            className="w-full rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+            className="w-full py-2 bg-red-800 text-white font-semibold rounded-lg hover:bg-black transition duration-300"
           >
             Login
           </button>
         </form>
-        <p className="mt-4 text-center text-sm">
+
+        <div className="text-center mt-4 text-gray-600">
           Don’t have an account?{" "}
-          <a href="/register" className="text-blue-600 hover:underline">
+          <Link to="/register" className="text-red-800 font-semibold hover:underline">
             Register
-          </a>
-        </p>
+          </Link>
+        </div>
+
+        <div className="text-center mt-2">
+          <Link to="/forgot-password" className="text-gray-500 text-sm hover:underline">
+            Forgot Password?
+          </Link>
+        </div>
       </div>
     </div>
   );
