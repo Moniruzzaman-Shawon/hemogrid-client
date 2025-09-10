@@ -1,20 +1,21 @@
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useContext } from "react";
+import AuthContext from "../../context/AuthContext";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { login } = useContext(AuthContext); // use login from context
 
   const handleLogin = (e) => {
     e.preventDefault();
-    // TODO: add login logic
-    console.log({ email, password });
+    login(email, password); // call context login
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
+    <div className="min-h-screen flex items-center justify-center bg-red-800">
       <div className="bg-white shadow-2xl rounded-lg w-full max-w-md lg:max-w-lg p-8 lg:p-12">
-        {/* Logo */}
+        {/* Logo & Heading */}
         <div className="flex justify-center mb-6">
           <svg
             width="50"
@@ -34,30 +35,22 @@ const Login = () => {
         </h2>
 
         <form onSubmit={handleLogin} className="space-y-4">
-          <div>
-            <label className="block text-gray-700 font-semibold mb-2">Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-800 focus:border-red-800"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-gray-700 font-semibold mb-2">Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="********"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-800 focus:border-red-800"
-              required
-            />
-          </div>
-
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="you@example.com"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-800"
+            required
+          />
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="********"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-800"
+            required
+          />
           <button
             type="submit"
             className="w-full py-2 bg-red-800 text-white font-semibold rounded-lg hover:bg-black transition duration-300"
@@ -70,12 +63,6 @@ const Login = () => {
           Don’t have an account?{" "}
           <Link to="/register" className="text-red-800 font-semibold hover:underline">
             Register
-          </Link>
-        </div>
-
-        <div className="text-center mt-2">
-          <Link to="/forgot-password" className="text-gray-500 text-sm hover:underline">
-            Forgot Password?
           </Link>
         </div>
       </div>

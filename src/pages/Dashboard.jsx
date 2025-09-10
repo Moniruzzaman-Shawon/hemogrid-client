@@ -1,15 +1,10 @@
-import useAuthContext from "../hooks/useAuthContext";
+import { Navigate } from "react-router-dom";
+import { useContext } from "react";
+import AuthContext from "../context/AuthContext";
 
-const Dashboard = () => {
-  const { user, logoutUser } = useAuthContext();
-
-  return (
-    <div>
-      <h1>Dashboard</h1>
-      <p>Welcome, {user?.email || "User"}</p>
-      <button onClick={logoutUser}>Logout</button>
-    </div>
-  );
+const PrivateRoute = ({ children }) => {
+  const { user } = useContext(AuthContext);
+  return user ? children : <Navigate to="/login" />;
 };
 
-export default Dashboard;
+export default PrivateRoute;

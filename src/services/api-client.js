@@ -1,19 +1,19 @@
 import axios from "axios";
 
 const apiClient = axios.create({
-  baseURL: "https://hemogrid.vercel.app/api/v1",
+  baseURL: import.meta.env.VITE_API_BASE_URL, // your .env variable
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
 
-// Automatically attach JWT token
-apiClient.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem("authTokens");
-    if (token) {
-      config.headers.Authorization = `JWT ${JSON.parse(token).access}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
+// Automatically attach JWT token if exists
+apiClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem("authTokens");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
 
 export default apiClient;

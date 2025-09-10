@@ -1,88 +1,43 @@
-import { useState, useEffect } from "react";
-import apiClient from "../services/api-client";
+import { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const useAuth = () => {
-  const [user, setUser] = useState(null);
-  const [errorMsg, setErrorMsg] = useState("");
+  const navigate = useNavigate();
+  const [user, setUser] = useState(() => {
+    const stored = localStorage.getItem("authUser");
+    return stored ? JSON.parse(stored) : null;
+  });
 
-  const getToken = () => {
+  const login = async (email, password) => {
     try {
-      const token = localStorage.getItem("authTokens");
-      return token ? JSON.parse(token) : null;
-    } catch {
-      return null;
-    }
-  };
-
-  const [authTokens, setAuthTokens] = useState(getToken());
-
-  useEffect(() => {
-    if (authTokens) fetchUserProfile();
-  }, [authTokens]);
-
-  const handleAPIError = (error, defaultMessage = "Something Went Wrong!") => {
-    console.error(error);
-    if (error.response && error.response.data) {
-      const message = Object.values(error.response.data).flat().join("\n");
-      setErrorMsg(message);
-      return { success: false, message };
-    }
-    setErrorMsg(defaultMessage);
-    return { success: false, message: defaultMessage };
-  };
-
-  // Fetch current user
-  const fetchUserProfile = async () => {
-    try {
-      const response = await apiClient.get("/auth/users/me/", {
-        headers: { Authorization: `JWT ${authTokens?.access}` },
+      const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}auth/login/`, {
+        email,
+        password,
       });
-      setUser(response.data);
-    } catch (error) {
-      console.error("Fetch user error", error);
+
+      // Assuming backend returns: { access, refresh, user }
+      const { access, refresh, user } = res.data;
+
+      localStorage.setItem("authTokens", access);
+      localStorage.setItem("authUser", JSON.stringify(user));
+      setUser(user);
+
+      navigate("/dashboard"); // redirect after login
+    } catch (err) {
+      console.error(err);
+      alert("Invalid credentials or server error");
     }
   };
 
-  // Login
-  const loginUser = async (credentials) => {
-    setErrorMsg("");
-    try {
-      const response = await apiClient.post("/auth/jwt/create/", credentials);
-      setAuthTokens(response.data);
-      localStorage.setItem("authTokens", JSON.stringify(response.data));
-      await fetchUserProfile();
-      return { success: true };
-    } catch (error) {
-      setErrorMsg(error.response?.data?.detail || "Login failed");
-      return { success: false, message: error.response?.data?.detail };
-    }
-  };
-
-  // Register
-  const registerUser = async (data) => {
-    setErrorMsg("");
-    try {
-      await apiClient.post("/auth/users/", data);
-      return { success: true, message: "Registration successful. Check your email." };
-    } catch (error) {
-      return handleAPIError(error, "Registration Failed");
-    }
-  };
-
-  // Logout
-  const logoutUser = () => {
-    setAuthTokens(null);
-    setUser(null);
+  const logout = () => {
     localStorage.removeItem("authTokens");
+    localStorage.removeItem("authUser");
+    setUser(null);
+    navigate("/login");
   };
 
-  return {
-    user,
-    errorMsg,
-    loginUser,
-    registerUser,
-    logoutUser,
-  };
+  return { user, login, logout };
 };
 
 export default useAuth;
