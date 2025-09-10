@@ -13,10 +13,9 @@ const CarouselSlide = ({ title, subtitle, image }) => {
             {title}
           </h1>
           <p className="text-gray-700 my-4 text-lg">{subtitle}</p>
-          <button className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-full shadow-md">
-            Learn More
-          </button>
+          
         </div>
+        
 
         {/* Right Image */}
         <div className="w-full md:w-1/2 flex justify-center">
@@ -31,7 +30,7 @@ const CarouselSlide = ({ title, subtitle, image }) => {
   );
 };
 
-// ✅ PropTypes to remove warnings
+// PropTypes to remove warnings
 CarouselSlide.propTypes = {
   title: PropTypes.string.isRequired,
   subtitle: PropTypes.string.isRequired,

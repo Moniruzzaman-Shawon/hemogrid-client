@@ -1,12 +1,7 @@
-// Import Swiper React components
 import { Swiper, SwiperSlide } from "swiper/react";
-
-// Import Swiper styles
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
-
-// import required modules
 import { Autoplay, Pagination, Navigation } from "swiper/modules";
 import CarouselSlide from "./CarouselSlide";
 import image1 from "../../assets/images/image1.jpg";
@@ -16,48 +11,49 @@ import image3 from "../../assets/images/image3.jpg";
 const HeroCarousel = () => {
   const slides = [
     {
-      title: "Donate Blood, Save Precious Lives",
-      subtitle: "A single donation can give someone a second chance at life.",
+      title: "Find Blood Donors Nearby",
+      subtitle: "Your quick action can save lives.",
       image: image1,
     },
     {
-      title: "Connect With Trusted Donors",
-      subtitle:
-        "Hemogrid makes it simple to find and connect with blood donors near you.",
+      title: "Join Hemogrid Community",
+      subtitle: "Connect with donors and recipients easily.",
       image: image2,
     },
     {
-      title: "Join Our Life-Saving Community",
-      subtitle: "Together, we can ensure no one suffers due to blood shortage.",
+      title: "Be a Lifesaver Today",
+      subtitle: "Donate blood and make a difference.",
       image: image3,
     },
   ];
 
   return (
-    <>
-      <Swiper
-        autoplay={{
-          delay: 3500,
-          disableOnInteraction: false,
-        }}
-        pagination={{
-          clickable: true,
-        }}
-        navigation={true}
-        modules={[Autoplay, Pagination, Navigation]}
-        className="mySwiper"
-      >
-        {slides.map((slide, index) => (
-          <SwiperSlide key={index}>
-            <CarouselSlide
-              title={slide.title}
-              subtitle={slide.subtitle}
-              image={slide.image}
-            />
-          </SwiperSlide>
-        ))}
-      </Swiper>
-    </>
+    <div>
+      <div className="relative">
+        <Swiper
+          autoplay={{ delay: 3000, disableOnInteraction: false }}
+          pagination={{ clickable: true }}
+          navigation={true}
+          modules={[Autoplay, Pagination, Navigation]}
+        >
+          {slides.map((slide, index) => (
+            <SwiperSlide key={index}>
+              <CarouselSlide
+                title={slide.title}
+                subtitle={slide.subtitle}
+                image={slide.image}
+              />
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      </div>
+
+      <div className="flex items-center justify-center py-4">
+        <button className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 my-4 rounded-full text-lg font-semibold shadow-lg transition">
+          Search Donor
+        </button>
+      </div>
+    </div>
   );
 };
 
