@@ -1,48 +1,128 @@
-import { useState } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import apiClient from "../services/api-client";
 
 const useAuth = () => {
-  const navigate = useNavigate();
-  const [user, setUser] = useState(() => {
-    const stored = localStorage.getItem("authUser");
-    return stored ? JSON.parse(stored) : null;
-  });
+  const [user, setUser] = useState(null);
+  const [errorMsg, setErrorMsg] = useState("");
 
-  const login = async (email, password) => {
+  const getToken = () => {
+    const token = localStorage.getItem("authTokens");
+    return token ? JSON.parse(token) : null;
+  };
+
+  const [authTokens, setAuthTokens] = useState(getToken());
+
+  useEffect(() => {
+    if (authTokens) fetchUserProfile();
+  }, [authTokens]);
+
+  const handleAPIError = (
+    error,
+    defaultMessage = "Something Went Wrong! Try Again"
+  ) => {
+    console.log(error);
+
+    if (error.response && error.response.data) {
+      const errorMessage = Object.values(error.response.data).flat().join("\n");
+      setErrorMsg(errorMessage);
+      return { success: false, message: errorMessage };
+    }
+    setErrorMsg(defaultMessage);
+    return {
+      success: false,
+      message: defaultMessage,
+    };
+  };
+
+  // Fetch user Profile
+  const fetchUserProfile = async () => {
     try {
-      // Login endpoint
-      const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}auth/login/`, {
-        email,
-        password,
+      const response = await apiClient.get("/auth/users/me", {
+        headers: { Authorization: `JWT ${authTokens?.access}` },
       });
-
-      const { access, refresh } = res.data;
-
-      // Save tokens
-      localStorage.setItem("authTokens", JSON.stringify({ access, refresh }));
-
-      // Decode JWT to get basic user info
-      const payload = JSON.parse(atob(access.split(".")[1]));
-      const user = { email: payload.email }; // Add more fields if JWT contains them
-      localStorage.setItem("authUser", JSON.stringify(user));
-      setUser(user);
-
-      navigate("/dashboard");
-    } catch (err) {
-      console.error(err);
-      throw new Error("Invalid credentials or server error");
+      setUser(response.data);
+    } catch (error) {
+      console.log("Error Fetching user", error);
     }
   };
 
-  const logout = () => {
-    localStorage.removeItem("authTokens");
-    localStorage.removeItem("authUser");
-    setUser(null);
-    navigate("/login");
+  // Update User Profile
+  const updateUserProfile = async (data) => {
+    setErrorMsg("");
+    try {
+      await apiClient.put("/auth/users/me/", data, {
+        headers: {
+          Authorization: `JWT ${authTokens?.access}`,
+        },
+      });
+    } catch (error) {
+      return handleAPIError(error);
+    }
   };
 
-  return { user, login, logout };
+  // Password Change
+  const changePassword = async (data) => {
+    setErrorMsg("");
+    try {
+      await apiClient.post("/auth/users/set_password/", data, {
+        headers: {
+          Authorization: `JWT ${authTokens?.access}`,
+        },
+      });
+    } catch (error) {
+      return handleAPIError(error);
+    }
+  };
+
+  // Login User
+  const loginUser = async (userData) => {
+    setErrorMsg("");
+    try {
+      const response = await apiClient.post("/auth/jwt/create/", userData);
+      setAuthTokens(response.data);
+      localStorage.setItem("authTokens", JSON.stringify(response.data));
+
+      // After login set user
+      await fetchUserProfile();
+      return { success: true };
+    } catch (error) {
+      setErrorMsg(error.response.data?.detail);
+      return { success: false };
+    }
+  };
+
+  // Register User
+  const registerUser = async (userData) => {
+    setErrorMsg("");
+    try {
+      await apiClient.post("/auth/users/", userData);
+      return {
+        success: true,
+        message:
+          "Registration successfull. Check your email to activate your account.",
+      };
+    } catch (error) {
+      return handleAPIError(error, "Registration Failed! Try Again");
+    }
+  };
+
+  // Logout User
+  const logoutUser = () => {
+    setAuthTokens(null);
+    setUser(null);
+    localStorage.removeItem("authTokens");
+    localStorage.removeItem("cartId");
+  };
+
+  return {
+    user,
+    errorMsg,
+    loginUser,
+    registerUser,
+    logoutUser,
+    updateUserProfile,
+    changePassword,
+  };
 };
 
 export default useAuth;

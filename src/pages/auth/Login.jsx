@@ -1,21 +1,20 @@
 import { Link } from "react-router-dom";
-import { useState, useContext } from "react";
-import { AuthContext } from "../../context/AuthContext";
-
+import { useState } from "react";
+import { useAuthContext } from "../../context/AuthContext";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const { login } = useContext(AuthContext); // get login from context
+  const { loginUser } = useAuthContext(); // ✅ get loginUser from hook
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
 
     try {
-      await login(email, password); // call login from context
+      await loginUser(email, password);
     } catch (err) {
-      setError(err.message || "Login failed");
+      setError(err.response?.data?.detail || err.message || "Login failed");
     }
   };
 

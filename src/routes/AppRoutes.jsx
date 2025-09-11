@@ -2,7 +2,6 @@ import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 import MainLayout from "../components/layouts/MainLayout";
 import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
-import useAuthContext from "../hooks/useAuthContext";
 import Home from "../pages/Home/Home";
 import AboutUs from "../pages/AboutUs";
 import Contact from "../pages/Contact";
@@ -10,6 +9,7 @@ import Contact from "../pages/Contact";
 import AdminDashboard from "../pages/dashboard/AdminDashboard";
 import UserDashboard from "../pages/dashboard/UserDashboard";
 import AdminLayout from "../components/layouts/AdminLayout";
+import { useAuthContext } from "../context/AuthContext";
 
 // ProtectedRoute component
 const ProtectedRoute = ({ children, role }) => {

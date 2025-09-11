@@ -2,13 +2,13 @@ import { useEffect, useState } from "react";
 import apiClient from "../../services/apiClient";
 
 const UserDashboard = () => {
-  const [userData, setUserData] = useState(null);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await apiClient.get("/auth/donor-profile/"); // absolute path
-        setUserData(res.data);
+        const res = await apiClient.get("/auth/donor-profile/");
+        setUser(res.data);
       } catch (err) {
         console.error("Error fetching user data:", err);
       }
@@ -16,14 +16,9 @@ const UserDashboard = () => {
     fetchData();
   }, []);
 
-  if (!userData) return <p>Loading...</p>;
+  if (!user) return <p>Loading...</p>;
 
-  return (
-    <div className="p-6">
-      <h2>Welcome, {userData.full_name}</h2>
-      <p>Email: {userData.email}</p>
-    </div>
-  );
+  return <div>Welcome, {user.full_name}</div>;
 };
 
 export default UserDashboard;

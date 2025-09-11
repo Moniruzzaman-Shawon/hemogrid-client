@@ -1,4 +1,4 @@
-import useAuthContext from "../../hooks/useAuthContext";
+import { useAuthContext } from "../../context/AuthContext";
 
 const TopNav = ({ role }) => {
   const { user, logout } = useAuthContext();
