@@ -6,6 +6,8 @@ import useAuthContext from "../hooks/useAuthContext";
 import Dashboard from "../pages/Dashboard";
 import AdminDashboard from "../pages/AdminDashboard";
 import Home from "../pages/Home/Home";
+import AboutUs from "../pages/AboutUs";
+import Contact from "../pages/Contact";
 
 // ProtectedRoute component
 const ProtectedRoute = ({ children, role }) => {
@@ -24,6 +26,8 @@ const AppRoutes = () => {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/aboutUs" element={<AboutUs />} />
+        <Route path="/contact" element={<Contact />} />
       </Route>
 
       {/* Protected Routes */}

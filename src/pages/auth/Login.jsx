@@ -13,7 +13,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-red-800">
+    <div className="min-h-screen flex items-center justify-center">
       <div className="bg-white shadow-2xl rounded-lg w-full max-w-md lg:max-w-lg p-8 lg:p-12">
         {/* Logo & Heading */}
         <div className="flex justify-center mb-6">
