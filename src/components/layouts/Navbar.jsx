@@ -62,7 +62,7 @@ const Navbar = () => {
                 <ul className="p-2 ml-4">
                   <li>
                     <Link
-                      to="/find-donors"
+                      to="/donors"
                       className="hover:bg-red-100 rounded transition duration-200"
                     >
                       Find Donors
@@ -70,7 +70,7 @@ const Navbar = () => {
                   </li>
                   <li>
                     <Link
-                      to="/request-blood"
+                      to="/blood-requests"
                       className="hover:bg-red-100 rounded transition duration-200"
                     >
                       Request Blood
@@ -141,7 +141,7 @@ const Navbar = () => {
             <ul className="absolute top-full left-0 mt-1 w-48 bg-red-800 rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-10">
               <li>
                 <Link
-                  to="/find-donors"
+                  to="/donors"
                   className="block px-4 py-2 hover:bg-black rounded transition duration-200"
                 >
                   Find Donors
@@ -149,7 +149,7 @@ const Navbar = () => {
               </li>
               <li>
                 <Link
-                  to="/request-blood"
+                  to="/blood-requests"
                   className="block px-4 py-2 hover:bg-black rounded transition duration-200"
                 >
                   Request Blood

@@ -10,6 +10,8 @@ import AdminDashboard from "../pages/dashboard/AdminDashboard";
 import UserDashboard from "../pages/dashboard/UserDashboard";
 import AdminLayout from "../components/layouts/AdminLayout";
 import { useAuthContext } from "../context/AuthContext";
+import BloodRequestList from "../pages/blood/BloodRequestList";
+import DonorList from "../pages/blood/DonorList";
 
 // ProtectedRoute component
 const ProtectedRoute = ({ children, role }) => {
@@ -35,6 +37,8 @@ const AppRoutes = () => {
     <Route path="/register" element={<Register />} />
     <Route path="/aboutUs" element={<AboutUs />} />
     <Route path="/contact" element={<Contact />} />
+    <Route path="/blood-requests" element={<BloodRequestList />} />
+    <Route path="/donors" element={<DonorList />} />
   </Route>
 
   {/* Protected Dashboard Routes */}
