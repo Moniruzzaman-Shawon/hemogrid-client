@@ -10,7 +10,7 @@ const TopNav = ({ role }) => {
       </div>
 
       <div className="flex items-center gap-4">
-        <span className="font-medium">{user?.email}</span>
+        <span className="font-medium">{user?.full_name || user?.email}</span>
         <button
           onClick={logout}
           className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"

@@ -17,9 +17,7 @@ const Sidebar = ({ role }) => {
             key={link.name}
             to={link.path}
             className={({ isActive }) =>
-              `p-2 rounded hover:bg-gray-200 ${
-                isActive ? "bg-gray-200 font-semibold" : ""
-              }`
+              `p-2 rounded hover:bg-gray-200 ${isActive ? "bg-gray-200 font-semibold" : ""}`
             }
           >
             {link.name}
