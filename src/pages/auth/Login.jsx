@@ -5,11 +5,18 @@ import AuthContext from "../../context/AuthContext";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { login } = useContext(AuthContext); // use login from context
+  const { login } = useContext(AuthContext);
+  const [error, setError] = useState("");
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    login(email, password); // call context login
+    setError(""); // reset
+
+    try {
+      await login(email, password);
+    } catch (err) {
+      setError(err.message || "Login failed.");
+    }
   };
 
   return (
@@ -61,7 +68,10 @@ const Login = () => {
 
         <div className="text-center mt-4 text-gray-600">
           Don’t have an account?{" "}
-          <Link to="/register" className="text-red-800 font-semibold hover:underline">
+          <Link
+            to="/register"
+            className="text-red-800 font-semibold hover:underline"
+          >
             Register
           </Link>
         </div>

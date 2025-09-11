@@ -1,6 +1,9 @@
+import { Link } from "react-router-dom";
+
 const Footer = () => {
   return (
     <footer className="footer sm:footer-horizontal bg-red-800 text-white p-10">
+
       {/* Logo / Branding */}
       <aside className="flex flex-col gap-3">
         <svg
@@ -15,35 +18,38 @@ const Footer = () => {
           <path d="M12 2C12 2 6 8 6 12s6 10 6 10 6-6 6-10-6-10-6-10zm0 14a4 4 0 1 1 0-8 4 4 0 0 1 0 8z" />
         </svg>
         <p>
-          <span className="font-extrabold">Hemogrid</span> 
+          <span className="font-extrabold">Hemogrid</span>
           <br />
           Life flows through every drop—be the reason it continues.
           <br />
           Your donation, their lifeline—join Hemogrid today.
         </p>
-        <button className="bg-white hover:bg-black text-black hover:text-white hover:font-bold font-semibold px-4 py-2 rounded">
+        <Link
+          to="/donate"
+          className="bg-white hover:bg-black text-black hover:text-white hover:font-bold font-semibold px-4 py-2 rounded"
+        >
           Donate Now
-        </button>
+        </Link>
       </aside>
 
       {/* Services */}
       <nav>
         <h6 className="footer-title">Services</h6>
-        <a className="link link-hover">Find Donors</a>
-        <a className="link link-hover">Request Blood</a>
-        <a className="link link-hover">Donate Blood</a>
-        <a className="link link-hover">Blood Camps</a>
+        <Link to="/find-donors" className="link link-hover">Find Donors</Link>
+        <Link to="/request-blood" className="link link-hover">Request Blood</Link>
+        <Link to="/donate-blood" className="link link-hover">Donate Blood</Link>
+        <Link to="/blood-camps" className="link link-hover">Blood Camps</Link>
       </nav>
 
       {/* Company */}
       <nav>
         <h6 className="footer-title">Company</h6>
-        <a className="link link-hover">About Us</a>
-        <a className="link link-hover">Contact</a>
-        <a className="link link-hover">Donate</a>
+        <Link to="/aboutUs" className="link link-hover">About Us</Link>
+        <Link to="/contact" className="link link-hover">Contact</Link>
+        <Link to="/donate" className="link link-hover">Donate</Link>
       </nav>
 
-      {/* Follow / Social */}
+      {/* Follow / Social (external links remain <a>) */}
       <nav>
         <h6 className="footer-title">Follow Us</h6>
         <div className="grid grid-flow-col gap-4 mt-2">
