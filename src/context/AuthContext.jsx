@@ -1,48 +1,46 @@
-import { createContext, useState } from "react";
-import axios from "axios";
-import * as jwt_decode from "jwt-decode"; // Use * as jwt_decode for Vite
+// src/context/AuthContext.jsx
+import { createContext, useState, useEffect } from "react";
+import apiClient from "../services/apiClient";
+import { useNavigate } from "react-router-dom";
 
-const AuthContext = createContext();
+export const AuthContext = createContext(); // named export
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(() => {
-    const token = localStorage.getItem("authTokens");
-    return token ? jwt_decode(JSON.parse(token).access) : null;
-  });
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const tokens = JSON.parse(localStorage.getItem("authTokens"));
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    if (tokens && userData) setUser(userData);
+  }, []);
 
   const login = async (email, password) => {
     try {
-      const response = await axios.post(
-  "http://127.0.0.1:8000/api/auth/jwt/create/",
-  { email, password }
-);
+      const res = await apiClient.post("/auth/jwt/create/", { email, password });
+      localStorage.setItem("authTokens", JSON.stringify(res.data));
 
-      // Save tokens
-      localStorage.setItem("authTokens", JSON.stringify(response.data));
+      const profileRes = await apiClient.get("/auth/donor-profile/");
+      localStorage.setItem("userData", JSON.stringify(profileRes.data));
+      setUser(profileRes.data);
 
-      // Decode access token to get user info
-      setUser(jwt_decode(response.data.access));
-
-      alert("Login successful!");
+      navigate("/dashboard");
     } catch (err) {
-      if (err.response && err.response.status === 401) {
-        alert("Invalid email or password.");
-      } else {
-        alert("Server error. Try again later.");
-      }
+      console.error("Login failed:", err);
+      throw err;
     }
   };
 
   const logout = () => {
     localStorage.removeItem("authTokens");
+    localStorage.removeItem("userData");
     setUser(null);
+    navigate("/login");
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, setUser, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
 };
-
-export default AuthContext;

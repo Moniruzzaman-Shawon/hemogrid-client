@@ -11,22 +11,27 @@ const useAuth = () => {
 
   const login = async (email, password) => {
     try {
+      // Login endpoint
       const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}auth/login/`, {
         email,
         password,
       });
 
-      // Assuming backend returns: { access, refresh, user }
-      const { access, refresh, user } = res.data;
+      const { access, refresh } = res.data;
 
-      localStorage.setItem("authTokens", access);
+      // Save tokens
+      localStorage.setItem("authTokens", JSON.stringify({ access, refresh }));
+
+      // Decode JWT to get basic user info
+      const payload = JSON.parse(atob(access.split(".")[1]));
+      const user = { email: payload.email }; // Add more fields if JWT contains them
       localStorage.setItem("authUser", JSON.stringify(user));
       setUser(user);
 
-      navigate("/dashboard"); // redirect after login
+      navigate("/dashboard");
     } catch (err) {
       console.error(err);
-      alert("Invalid credentials or server error");
+      throw new Error("Invalid credentials or server error");
     }
   };
 

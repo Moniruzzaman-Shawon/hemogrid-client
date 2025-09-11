@@ -1,7 +1,7 @@
-import apiClient from "./api-client";
+import apiClient from "./apiClient";
 
 export const loginUser = async (email, password) => {
-  const response = await apiClient.post("/auth/login/", { email, password });
+  const response = await apiClient.post("/auth/jwt/create/", { email, password });
   return response.data; // assuming backend returns { access, refresh, user }
 };
 

@@ -1,28 +1,28 @@
 import { Link } from "react-router-dom";
 import { useState, useContext } from "react";
-import AuthContext from "../../context/AuthContext";
+import { AuthContext } from "../../context/AuthContext";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { login } = useContext(AuthContext);
   const [error, setError] = useState("");
+  const { login } = useContext(AuthContext); // get login from context
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError(""); // reset
+    setError("");
 
     try {
-      await login(email, password);
+      await login(email, password); // call login from context
     } catch (err) {
-      setError(err.message || "Login failed.");
+      setError(err.message || "Login failed");
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="bg-white shadow-2xl rounded-lg w-full max-w-md lg:max-w-lg p-8 lg:p-12">
-        {/* Logo & Heading */}
+        {/* Logo */}
         <div className="flex justify-center mb-6">
           <svg
             width="50"
@@ -64,6 +64,7 @@ const Login = () => {
           >
             Login
           </button>
+          {error && <p className="text-red-600 text-sm mt-1">{error}</p>}
         </form>
 
         <div className="text-center mt-4 text-gray-600">

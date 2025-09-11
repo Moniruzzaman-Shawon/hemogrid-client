@@ -1,13 +1,15 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 import MainLayout from "../components/layouts/MainLayout";
 import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
 import useAuthContext from "../hooks/useAuthContext";
-import Dashboard from "../pages/Dashboard";
-import AdminDashboard from "../pages/AdminDashboard";
 import Home from "../pages/Home/Home";
 import AboutUs from "../pages/AboutUs";
 import Contact from "../pages/Contact";
+
+import AdminDashboard from "../pages/dashboard/AdminDashboard";
+import UserDashboard from "../pages/dashboard/UserDashboard";
+import AdminLayout from "../components/layouts/AdminLayout";
 
 // ProtectedRoute component
 const ProtectedRoute = ({ children, role }) => {
@@ -18,38 +20,51 @@ const ProtectedRoute = ({ children, role }) => {
   return children;
 };
 
+const DashboardLayout = () => {
+  // This layout renders an Outlet for nested routes
+  return <Outlet />;
+};
+
 const AppRoutes = () => {
   return (
     <Routes>
-      {/* Public Routes */}
-      <Route element={<MainLayout />}>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/aboutUs" element={<AboutUs />} />
-        <Route path="/contact" element={<Contact />} />
-      </Route>
+  {/* Public Routes */}
+  <Route element={<MainLayout />}>
+    <Route path="/" element={<Home />} />
+    <Route path="/login" element={<Login />} />
+    <Route path="/register" element={<Register />} />
+    <Route path="/aboutUs" element={<AboutUs />} />
+    <Route path="/contact" element={<Contact />} />
+  </Route>
 
-      {/* Protected Routes */}
-      <Route
-        path="/dashboard"
-        element={
-          <ProtectedRoute>
-            {/* <DashboardLayout /> */}
-          </ProtectedRoute>
-        }
-      >
-        <Route index element={<Dashboard />} />
-        <Route path="admin" element={
-          <ProtectedRoute role="admin">
-            <AdminDashboard />
-          </ProtectedRoute>
-        } />
-      </Route>
+  {/* Protected Dashboard Routes */}
+  <Route
+    path="/dashboard"
+    element={
+      <ProtectedRoute>
+        <DashboardLayout />
+      </ProtectedRoute>
+    }
+  >
+    <Route index element={<UserDashboard />} />
+    
+    {/* Admin Routes */}
+    <Route
+      path="admin"
+      element={
+        <ProtectedRoute role="admin">
+          <AdminLayout />
+        </ProtectedRoute>
+      }
+    >
+      <Route index element={<AdminDashboard />} />
+      {/* Add more admin nested pages here */}
+    </Route>
+  </Route>
 
-      {/* Catch-all redirect */}
-      <Route path="*" element={<Navigate to="/" />} />
-    </Routes>
+  {/* Catch-all */}
+  <Route path="*" element={<Navigate to="/" />} />
+</Routes>
   );
 };
 
