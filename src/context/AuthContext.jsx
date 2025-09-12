@@ -16,6 +16,7 @@ export const AuthProvider = ({ children }) => {
 
   const navigate = useNavigate();
 
+  // Load user from localStorage
   useEffect(() => {
     const tokens = localStorage.getItem("authTokens");
     const userData = localStorage.getItem("userData");
@@ -27,19 +28,26 @@ export const AuthProvider = ({ children }) => {
 
   const loginUser = async (email, password) => {
     try {
-      // ✅ Use your backend login endpoint
-      const res = await apiClient.post("/auth/login/", { email, password });
+      // Login endpoint
+      const res = await apiClient.post("auth/login/", { email, password });
       const tokens = res.data;
       setAuthTokens(tokens);
       localStorage.setItem("authTokens", JSON.stringify(tokens));
 
+      // Fetch profile
       const profileRes = await apiClient.get("/auth/donor-profile/", {
-        headers: { Authorization: `Bearer ${tokens.access}` }, // ✅ Use Bearer
+        headers: { Authorization: `Bearer ${tokens.access}` },
       });
+
       setUser(profileRes.data);
       localStorage.setItem("userData", JSON.stringify(profileRes.data));
 
-      navigate("/dashboard");
+      // Role-based redirect
+      if (profileRes.data.role === "admin") {
+        navigate("/dashboard/admin");
+      } else {
+        navigate("/dashboard");
+      }
     } catch (err) {
       console.error("Login failed:", err.response?.data || err.message);
       throw err;
@@ -61,5 +69,5 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-// Custom hook to use auth
+// Custom hook
 export const useAuthContext = () => useContext(AuthContext);

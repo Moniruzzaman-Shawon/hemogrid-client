@@ -1,7 +1,7 @@
 import { useAuthContext } from "../../context/AuthContext";
 
 const TopNav = ({ role }) => {
-  const { user, logout } = useAuthContext();
+  const { user, logoutUser } = useAuthContext();
 
   return (
     <header className="flex flex-col md:flex-row justify-between items-center bg-gray-200 shadow-md  px-6 py-4 md:py-3 sticky top-0 z-50">
@@ -10,7 +10,6 @@ const TopNav = ({ role }) => {
         <h2 className="text-xl md:text-2xl font-semibold  text-black">
           {role === "admin" ? "Admin Panel" : "Dashboard"}
         </h2>
-        
       </div>
 
       {/* User Info */}
@@ -19,7 +18,7 @@ const TopNav = ({ role }) => {
           {user?.full_name || user?.email}
         </span>
         <button
-          onClick={logout}
+          onClick={logoutUser} // use correct function
           className="bg-red-500 text-white px-4 py-1 rounded-full hover:bg-red-600 transition duration-300 shadow-sm"
         >
           Logout

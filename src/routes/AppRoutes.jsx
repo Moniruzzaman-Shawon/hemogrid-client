@@ -1,24 +1,33 @@
 import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 import MainLayout from "../components/layouts/MainLayout";
+import AdminLayout from "../components/layouts/AdminLayout";
+
 import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
+import VerifyEmail from "../pages/auth/VerifyEmail";
+
 import Home from "../pages/Home/Home";
 import AboutUs from "../pages/AboutUs";
 import Contact from "../pages/Contact";
 
 import AdminDashboard from "../pages/dashboard/AdminDashboard";
 import UserDashboard from "../pages/dashboard/UserDashboard";
-import AdminLayout from "../components/layouts/AdminLayout";
-import { useAuthContext } from "../context/AuthContext";
+import UserProfile from "../pages/UserProfile";
+
 import BloodRequestList from "../pages/blood/BloodRequestList";
 import DonorList from "../pages/blood/DonorList";
 import CreateBloodRequest from "../pages/blood/CreateBloodRequest";
-import VerifyEmail from "../pages/auth/VerifyEmail";
+import AdminBloodRequestList from "../pages/blood/AdminBloodRequestList";
+
 import ForgotPassword from "../pages/passwords/ForgotPassword";
 import ResetPassword from "../pages/passwords/ResetPassword";
 import ChangePassword from "../pages/passwords/ChangePassword";
-import UserProfile from "../pages/UserProfile";
 
+import { useAuthContext } from "../context/AuthContext";
+import AdminUserList from "../pages/admin/AdminUserList";
+import AdminUserSuspend from "../pages/admin/AdminUserSuspend";
+import AdminUserVerify from "../pages/admin/AdminUserVerify";
+import AdminStats from "../pages/blood/AdminStats";
 
 // ProtectedRoute component
 const ProtectedRoute = ({ children, role }) => {
@@ -58,7 +67,10 @@ const AppRoutes = () => {
 
         {/* Password Routes */}
         <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password/:uidb64/:token" element={<ResetPassword />} />
+        <Route
+          path="/reset-password/:uidb64/:token"
+          element={<ResetPassword />}
+        />
       </Route>
 
       {/* Protected Dashboard Routes */}
@@ -70,14 +82,12 @@ const AppRoutes = () => {
           </ProtectedRoute>
         }
       >
-        {/* Default User Dashboard */}
+        {/* User Routes */}
         <Route index element={<UserDashboard />} />
         <Route path="profile" element={<UserProfile />} />
-
-        {/* Nested Dashboard Pages */}
         <Route path="manage-passwords" element={<ChangePassword />} />
 
-        {/* Admin Nested Routes */}
+        {/* Admin Routes */}
         <Route
           path="admin"
           element={
@@ -86,8 +96,12 @@ const AppRoutes = () => {
             </ProtectedRoute>
           }
         >
-          <Route index element={<AdminDashboard />} />
-          {/* Add more admin nested pages here */}
+          <Route index element={<AdminDashboard />} />                  {/* /dashboard/admin */}
+          <Route path="users" element={<AdminUserList />} />           {/* /dashboard/admin/users */}
+          <Route path="users/:id/suspend" element={<AdminUserSuspend />} /> {/* /dashboard/admin/users/:id/suspend */}
+          <Route path="users/:id/verify" element={<AdminUserVerify />} />   {/* /dashboard/admin/users/:id/verify */}
+          <Route path="requests" element={<AdminBloodRequestList />} />     {/* /dashboard/admin/requests */}
+          <Route path="stats" element={<AdminStats />} />                   {/* /dashboard/admin/stats */}
         </Route>
       </Route>
 

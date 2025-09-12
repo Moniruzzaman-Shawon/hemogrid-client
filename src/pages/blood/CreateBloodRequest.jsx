@@ -1,25 +1,13 @@
 import { useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import apiClient from "../../services/apiClient";
-import { AuthContext } from "../../context/AuthContext"; 
+import { AuthContext } from "../../context/AuthContext";
 
 const CreateBloodRequest = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { donorId, donorName } = location.state || {}; 
-  const { user } = useContext(AuthContext);
-
-  // Redirect if not logged in or donor info missing
-  useEffect(() => {
-    if (!user) {
-      navigate("/login", { state: { from: location } });
-    } else if (!donorId || !donorName) {
-      navigate("/donors");
-    }
-  }, [user, donorId, donorName, navigate, location]);
-
-  // Don't render form if not ready
-  if (!user || !donorId || !donorName) return null;
+  const { donorId, donorName } = location.state || {};
+  const { user, authTokens } = useContext(AuthContext);
 
   const [recipientName, setRecipientName] = useState("");
   const [recipientPhone, setRecipientPhone] = useState("");
@@ -28,9 +16,19 @@ const CreateBloodRequest = () => {
   const [message, setMessage] = useState("");
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  // Redirect if not logged in or donor info missing
+  useEffect(() => {
+    if (!user) navigate("/login", { state: { from: location } });
+    else if (!donorId || !donorName) navigate("/donors");
+  }, [user, donorId, donorName, navigate, location]);
+
+  if (!user || !donorId || !donorName) return null;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const payload = {
         donor: donorId,
@@ -42,7 +40,12 @@ const CreateBloodRequest = () => {
         message,
       };
 
-      await apiClient.post("/blood-requests/blood-requests/create/", payload); 
+      await apiClient.post("/blood-requests/blood-request-create/", payload, {
+        headers: {
+          Authorization: `Bearer ${authTokens?.access}`,
+        },
+      });
+
       setSuccess("Blood request sent successfully!");
       setError("");
 
@@ -54,8 +57,12 @@ const CreateBloodRequest = () => {
       setMessage("");
     } catch (err) {
       console.error(err);
-      setError("Failed to send request. Please try again.");
+      setError(
+        err.response?.data?.detail || "Failed to send request. Please try again."
+      );
       setSuccess("");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -100,14 +107,11 @@ const CreateBloodRequest = () => {
           className="p-2 border border-gray-300 rounded-lg"
         >
           <option value="">Select Blood Group</option>
-          <option value="A+">A+</option>
-          <option value="A-">A-</option>
-          <option value="B+">B+</option>
-          <option value="B-">B-</option>
-          <option value="AB+">AB+</option>
-          <option value="AB-">AB-</option>
-          <option value="O+">O+</option>
-          <option value="O-">O-</option>
+          {["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map((bg) => (
+            <option key={bg} value={bg}>
+              {bg}
+            </option>
+          ))}
         </select>
         <textarea
           placeholder="Optional message"
@@ -117,9 +121,12 @@ const CreateBloodRequest = () => {
         />
         <button
           type="submit"
-          className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-200"
+          disabled={loading}
+          className={`px-4 py-2 text-white rounded-lg transition duration-200 ${
+            loading ? "bg-gray-400 cursor-not-allowed" : "bg-red-600 hover:bg-red-700"
+          }`}
         >
-          Send Request
+          {loading ? "Sending..." : "Send Request"}
         </button>
       </form>
     </div>
