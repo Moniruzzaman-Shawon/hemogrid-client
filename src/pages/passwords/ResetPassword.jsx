@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { resetPassword } from "../../services/authService";
+import { resetPassword } from "../../services/authServices";
 
 const ResetPassword = () => {
   const { uidb64, token } = useParams();

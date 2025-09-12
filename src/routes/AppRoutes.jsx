@@ -14,14 +14,18 @@ import BloodRequestList from "../pages/blood/BloodRequestList";
 import DonorList from "../pages/blood/DonorList";
 import CreateBloodRequest from "../pages/blood/CreateBloodRequest";
 import VerifyEmail from "../pages/auth/VerifyEmail";
-import MyBloodRequests from "../pages/blood/MyBloodRequests";
+import ForgotPassword from "../pages/passwords/ForgotPassword";
+import ResetPassword from "../pages/passwords/ResetPassword";
+import ChangePassword from "../pages/passwords/ChangePassword";
+import UserProfile from "../pages/UserProfile";
+
 
 // ProtectedRoute component
 const ProtectedRoute = ({ children, role }) => {
   const { user } = useAuthContext();
 
-  if (!user) return <Navigate to="/login" />;
-  if (role && user.role !== role) return <Navigate to="/dashboard" />;
+  if (!user) return <Navigate to="/login" replace />;
+  if (role && user.role !== role) return <Navigate to="/dashboard" replace />;
   return children;
 };
 
@@ -42,7 +46,7 @@ const AppRoutes = () => {
         <Route path="/blood-requests" element={<BloodRequestList />} />
         <Route path="/donors" element={<DonorList />} />
 
-        {/* CreateBloodRequest is protected, wrap with ProtectedRoute */}
+        {/* Protected Create Blood Request */}
         <Route
           path="/create-blood-requests"
           element={
@@ -51,6 +55,10 @@ const AppRoutes = () => {
             </ProtectedRoute>
           }
         />
+
+        {/* Password Routes */}
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:uidb64/:token" element={<ResetPassword />} />
       </Route>
 
       {/* Protected Dashboard Routes */}
@@ -62,10 +70,14 @@ const AppRoutes = () => {
           </ProtectedRoute>
         }
       >
+        {/* Default User Dashboard */}
         <Route index element={<UserDashboard />} />
-        
+        <Route path="profile" element={<UserProfile />} />
 
-        {/* Admin Routes */}
+        {/* Nested Dashboard Pages */}
+        <Route path="manage-passwords" element={<ChangePassword />} />
+
+        {/* Admin Nested Routes */}
         <Route
           path="admin"
           element={
@@ -80,7 +92,7 @@ const AppRoutes = () => {
       </Route>
 
       {/* Catch-all */}
-      <Route path="*" element={<Navigate to="/" />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 };

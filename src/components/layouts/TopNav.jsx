@@ -7,10 +7,10 @@ const TopNav = ({ role }) => {
     <header className="flex flex-col md:flex-row justify-between items-center bg-gray-200 shadow-md  px-6 py-4 md:py-3 sticky top-0 z-50">
       {/* Title */}
       <div className="mb-3 md:mb-0">
-        <h2 className="text-xl md:text-2xl font-semibold  text-gray-700">
+        <h2 className="text-xl md:text-2xl font-semibold  text-black">
           {role === "admin" ? "Admin Panel" : "Dashboard"}
         </h2>
-        <p className="text-sm text-gray-800">{role === "admin" ? "Manage users and settings" : "Welcome to your dashboard"}</p>
+        
       </div>
 
       {/* User Info */}

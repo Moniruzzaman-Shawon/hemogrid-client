@@ -2,13 +2,15 @@ import { NavLink } from "react-router-dom";
 
 const Sidebar = ({ role }) => {
   const links = [
-    { name: "Profile", path: "/blood-requests" },
-    { name: "Dashboard", path: "/dashboard/" },
+    // Public links
+    { name: "Home", path: "/" },
     { name: "Donors", path: "/donors" },
     { name: "Blood Requests", path: "/blood-requests" },
-    { name: "Donate Blood", path: "/blood-requests" },
-    { name: "Password Manager", path: "/blood-requests" },
-    
+    { name: "Donate Blood", path: "/create-blood-requests" },
+
+    // Dashboard nested links
+    { name: "Profile", path: "/dashboard/profile" },
+    { name: "Change Password", path: "/dashboard/manage-passwords" },
   ];
 
   return (
@@ -25,7 +27,11 @@ const Sidebar = ({ role }) => {
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300
                transform hover:translate-x-1 hover:bg-red-500 hover:shadow-md
-               ${isActive ? "bg-gradient-to-r from-red-600 to-red-700 font-semibold shadow-lg" : ""}`
+               ${
+                 isActive
+                   ? "bg-gradient-to-r from-red-600 to-red-700 font-semibold shadow-lg"
+                   : ""
+               }`
             }
           >
             <span className="text-lg">{link.icon}</span>
@@ -33,7 +39,6 @@ const Sidebar = ({ role }) => {
           </NavLink>
         ))}
       </nav>
-
 
       {/* Footer / Optional Extra Info */}
       <div className="mt-auto text-sm text-red-100 pt-6 border-t border-red-400">
