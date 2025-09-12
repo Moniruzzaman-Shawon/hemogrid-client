@@ -9,7 +9,9 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [authTokens, setAuthTokens] = useState(() =>
-    localStorage.getItem("authTokens") ? JSON.parse(localStorage.getItem("authTokens")) : null
+    localStorage.getItem("authTokens")
+      ? JSON.parse(localStorage.getItem("authTokens"))
+      : null
   );
 
   const navigate = useNavigate();
@@ -25,13 +27,14 @@ export const AuthProvider = ({ children }) => {
 
   const loginUser = async (email, password) => {
     try {
-      const res = await apiClient.post("/auth/jwt/create/", { email, password });
+      // ✅ Use your backend login endpoint
+      const res = await apiClient.post("/auth/login/", { email, password });
       const tokens = res.data;
       setAuthTokens(tokens);
       localStorage.setItem("authTokens", JSON.stringify(tokens));
 
       const profileRes = await apiClient.get("/auth/donor-profile/", {
-        headers: { Authorization: `JWT ${tokens.access}` },
+        headers: { Authorization: `Bearer ${tokens.access}` }, // ✅ Use Bearer
       });
       setUser(profileRes.data);
       localStorage.setItem("userData", JSON.stringify(profileRes.data));

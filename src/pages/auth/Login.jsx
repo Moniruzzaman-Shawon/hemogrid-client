@@ -1,11 +1,18 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useAuthContext } from "../../context/AuthContext";
+
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const { loginUser } = useAuthContext(); // 
+  const { loginUser } = useAuthContext();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Determine the page to redirect to after login
+  // If coming from a protected page, use that, otherwise default to dashboard
+  const from = location.state?.from || "/dashboard"; 
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -13,6 +20,21 @@ const Login = () => {
 
     try {
       await loginUser(email, password);
+
+      // Redirect back to original page or dashboard
+      if (from.donorId && from.donorName) {
+        // coming from DonorCard click
+        navigate("/create-blood-requests", {
+          state: { donorId: from.donorId, donorName: from.donorName },
+          replace: true,
+        });
+      } else if (from.pathname) {
+        // coming from other protected page
+        navigate(from.pathname, { replace: true });
+      } else {
+        // default
+        navigate("/dashboard", { replace: true });
+      }
     } catch (err) {
       setError(err.response?.data?.detail || err.message || "Login failed");
     }
@@ -21,7 +43,6 @@ const Login = () => {
   return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="bg-white shadow-2xl rounded-lg w-full max-w-md lg:max-w-lg p-8 lg:p-12">
-        {/* Logo */}
         <div className="flex justify-center mb-6">
           <svg
             width="50"

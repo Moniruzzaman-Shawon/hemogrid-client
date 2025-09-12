@@ -14,13 +14,27 @@ const DonorList = () => {
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
-  const donorsPerPage = 9;
+  const [totalPages, setTotalPages] = useState(1);
+  const donorsPerPage = 10; // match backend pagination
 
-  // Fetch donors from API
-  const fetchDonors = async () => {
+  // Fetch donors from API with filters and pagination
+  const fetchDonors = async (page = 1) => {
+    setLoading(true);
+    setError("");
+
     try {
-      const res = await apiClient.get("/auth/donors/");
-      setDonors(Array.isArray(res.data) ? res.data : res.data.results);
+      const params = {
+        page,
+      };
+      if (bloodGroup !== "All") params.blood_group = bloodGroup;
+      if (showAvailable) params.availability_status = "available";
+      if (search.trim() !== "") params.search = search.trim();
+
+      const res = await apiClient.get("/auth/donors/", { params });
+
+      setDonors(res.data.results || []);
+      setTotalPages(Math.ceil(res.data.count / donorsPerPage));
+      setCurrentPage(page);
     } catch (err) {
       console.error("Error fetching donors:", err);
       setError("Failed to fetch donors. Please try again later.");
@@ -30,57 +44,16 @@ const DonorList = () => {
   };
 
   useEffect(() => {
-    fetchDonors();
-  }, []);
-
-  // Reset page when filters/search change
-  useEffect(() => {
-    setCurrentPage(1);
+    fetchDonors(1); // fetch first page initially
   }, [showAvailable, bloodGroup, search]);
 
   if (loading) return <p className="text-center mt-10">Loading donors...</p>;
   if (error) return <p className="text-center mt-10 text-red-500">{error}</p>;
 
-  // Apply filters
-  let filteredDonors = donors;
-
-  if (showAvailable) {
-    filteredDonors = filteredDonors.filter((d) => d.availability_status);
-  }
-
-  if (bloodGroup !== "All") {
-    filteredDonors = filteredDonors.filter(
-      (d) => d.blood_group.toLowerCase() === bloodGroup.toLowerCase()
-    );
-  }
-
-  if (search.trim() !== "") {
-    filteredDonors = filteredDonors.filter(
-      (d) =>
-        d.full_name.toLowerCase().includes(search.toLowerCase()) ||
-        d.address.toLowerCase().includes(search.toLowerCase())
-    );
-  }
-
-  // Sort available donors first
-  filteredDonors = filteredDonors.sort(
-    (a, b) => b.availability_status - a.availability_status
-  );
-
-  // Pagination
-  const totalPages = Math.ceil(filteredDonors.length / donorsPerPage);
-  const indexOfLastDonor = currentPage * donorsPerPage;
-  const indexOfFirstDonor = indexOfLastDonor - donorsPerPage;
-  const currentDonors = filteredDonors.slice(
-    indexOfFirstDonor,
-    indexOfLastDonor
-  );
-
   return (
     <div className="p-6">
       {/* Filters */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-        {/* Search */}
         <input
           type="text"
           placeholder="Search by name or address..."
@@ -89,7 +62,6 @@ const DonorList = () => {
           className="w-full md:w-1/3 p-2 border border-gray-300 rounded-lg"
         />
 
-        {/* Blood Group Filter */}
         <select
           value={bloodGroup}
           onChange={(e) => setBloodGroup(e.target.value)}
@@ -106,7 +78,6 @@ const DonorList = () => {
           <option value="O-">O-</option>
         </select>
 
-        {/* Availability Filter */}
         <label className="flex items-center gap-2">
           <input
             type="checkbox"
@@ -119,14 +90,13 @@ const DonorList = () => {
 
       {/* Summary */}
       <p className="mb-4 text-gray-700">
-        Showing {filteredDonors.length} donor
-        {filteredDonors.length !== 1 ? "s" : ""}
+        Showing {donors.length} donor{donors.length !== 1 ? "s" : ""}
       </p>
 
       {/* Donor Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {currentDonors.length > 0 ? (
-          currentDonors.map((donor) => <DonorCard key={donor.id} donor={donor} />)
+        {donors.length > 0 ? (
+          donors.map((donor) => <DonorCard key={donor.id} donor={donor} />)
         ) : (
           <p className="text-center col-span-full">No donors found.</p>
         )}
@@ -136,7 +106,7 @@ const DonorList = () => {
       {totalPages > 1 && (
         <div className="flex justify-center items-center mt-6 gap-2">
           <button
-            onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+            onClick={() => fetchDonors(currentPage - 1)}
             disabled={currentPage === 1}
             className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
           >
@@ -146,7 +116,7 @@ const DonorList = () => {
             Page {currentPage} of {totalPages}
           </span>
           <button
-            onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+            onClick={() => fetchDonors(currentPage + 1)}
             disabled={currentPage === totalPages}
             className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
           >

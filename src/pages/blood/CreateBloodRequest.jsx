@@ -1,11 +1,25 @@
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import apiClient from "../../services/apiClient";
+import { AuthContext } from "../../context/AuthContext"; 
 
 const CreateBloodRequest = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { donorId, donorName } = location.state || {}; // passed from donor card
+  const { donorId, donorName } = location.state || {}; 
+  const { user } = useContext(AuthContext);
+
+  // Redirect if not logged in or donor info missing
+  useEffect(() => {
+    if (!user) {
+      navigate("/login", { state: { from: location } });
+    } else if (!donorId || !donorName) {
+      navigate("/donors");
+    }
+  }, [user, donorId, donorName, navigate, location]);
+
+  // Don't render form if not ready
+  if (!user || !donorId || !donorName) return null;
 
   const [recipientName, setRecipientName] = useState("");
   const [recipientPhone, setRecipientPhone] = useState("");
@@ -38,9 +52,6 @@ const CreateBloodRequest = () => {
       setRecipientAddress("");
       setBloodGroup("");
       setMessage("");
-
-      // Optionally redirect to My Requests page
-      // navigate("/blood-requests/my-requests");
     } catch (err) {
       console.error(err);
       setError("Failed to send request. Please try again.");
@@ -51,7 +62,7 @@ const CreateBloodRequest = () => {
   return (
     <div className="max-w-lg mx-auto p-6 bg-white shadow-lg rounded-lg mt-10">
       <h2 className="text-2xl font-bold mb-4 text-red-700">
-        Request Blood from {donorName || "Donor"}
+        Request Blood from {donorName}
       </h2>
 
       {success && <p className="text-green-600 mb-3">{success}</p>}
