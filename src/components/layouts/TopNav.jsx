@@ -4,16 +4,23 @@ const TopNav = ({ role }) => {
   const { user, logout } = useAuthContext();
 
   return (
-    <header className="flex justify-between items-center bg-white shadow p-4">
-      <div>
-        <h2 className="text-lg font-semibold">{role === "admin" ? "Admin Panel" : "Dashboard"}</h2>
+    <header className="flex flex-col md:flex-row justify-between items-center bg-gray-200 shadow-md  px-6 py-4 md:py-3 sticky top-0 z-50">
+      {/* Title */}
+      <div className="mb-3 md:mb-0">
+        <h2 className="text-xl md:text-2xl font-semibold  text-gray-700">
+          {role === "admin" ? "Admin Panel" : "Dashboard"}
+        </h2>
+        <p className="text-sm text-gray-800">{role === "admin" ? "Manage users and settings" : "Welcome to your dashboard"}</p>
       </div>
 
-      <div className="flex items-center gap-4">
-        <span className="font-medium">{user?.full_name || user?.email}</span>
+      {/* User Info */}
+      <div className="flex items-center gap-4 bg-gray-100 px-4 py-2 rounded-full shadow-sm">
+        <span className="font-medium text-gray-700 truncate max-w-[180px]">
+          {user?.full_name || user?.email}
+        </span>
         <button
           onClick={logout}
-          className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+          className="bg-red-500 text-white px-4 py-1 rounded-full hover:bg-red-600 transition duration-300 shadow-sm"
         >
           Logout
         </button>

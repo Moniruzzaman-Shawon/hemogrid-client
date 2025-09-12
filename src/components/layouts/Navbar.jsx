@@ -1,6 +1,9 @@
 import { Link } from "react-router-dom";
+import { useAuthContext } from "../../context/AuthContext";
 
 const Navbar = () => {
+  const { user, logoutUser } = useAuthContext();
+
   return (
     <div className="navbar bg-red-800 shadow-sm px-4 md:px-8 lg:px-10">
       {/* Logo */}
@@ -23,7 +26,7 @@ const Navbar = () => {
         </Link>
       </div>
 
-      {/* Mobile Hamburger Menu (right side) */}
+      {/* Mobile Hamburger Menu */}
       <div className="navbar-end sm:block md:hidden">
         <div className="dropdown dropdown-end">
           <label tabIndex={0} className="btn btn-ghost">
@@ -42,6 +45,7 @@ const Navbar = () => {
               />
             </svg>
           </label>
+
           <ul
             tabIndex={0}
             className="menu menu-compact dropdown-content mt-3 p-4 shadow-lg rounded-lg bg-white w-60 text-gray-800"
@@ -54,6 +58,16 @@ const Navbar = () => {
                 Home
               </Link>
             </li>
+            {user && (
+              <li>
+                <Link
+                  to="/dashboard"
+                  className="hover:bg-red-100 rounded transition duration-200"
+                >
+                  Dashboard
+                </Link>
+              </li>
+            )}
             <li tabIndex={0}>
               <details className="group">
                 <summary className="cursor-pointer hover:bg-red-100 rounded px-2 py-1 group-open:bg-red-100">
@@ -104,26 +118,42 @@ const Navbar = () => {
               </Link>
             </li>
 
-            {/* Mobile Login/Register Buttons */}
+            {/* Mobile Login/Register or User Info */}
             <li className="mt-2">
-              <Link
-                to="/register"
-                className="btn w-full mb-2 bg-white text-red-800 hover:bg-black hover:text-white transition duration-300"
-              >
-                Register
-              </Link>
-              <Link
-                to="/login"
-                className="btn w-full bg-white text-red-800 hover:bg-black hover:text-white transition duration-300"
-              >
-                Login
-              </Link>
+              {user ? (
+                <div className="flex flex-col gap-2">
+                  <span className="text-red-800 font-semibold truncate">
+                    {user.email}
+                  </span>
+                  <button
+                    onClick={logoutUser}
+                    className="btn w-full bg-red-800 text-white hover:bg-black transition duration-300"
+                  >
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-2">
+                  <Link
+                    to="/register"
+                    className="btn w-full bg-white text-red-800 hover:bg-black hover:text-white transition duration-300"
+                  >
+                    Register
+                  </Link>
+                  <Link
+                    to="/login"
+                    className="btn w-full bg-white text-red-800 hover:bg-black hover:text-white transition duration-300"
+                  >
+                    Login
+                  </Link>
+                </div>
+              )}
             </li>
           </ul>
         </div>
       </div>
 
-      {/* Desktop + Tablet Menu (md and above) */}
+      {/* Desktop + Tablet Menu */}
       <div className="navbar-center hidden md:flex">
         <ul className="menu menu-horizontal text-white px-1 gap-4">
           <li>
@@ -134,6 +164,16 @@ const Navbar = () => {
               Home
             </Link>
           </li>
+          {user && (
+            <li>
+              <Link
+                to="/dashboard"
+                className="hover:bg-black rounded px-2 py-1 transition duration-300"
+              >
+                Dashboard
+              </Link>
+            </li>
+          )}
           <li className="relative group">
             <span className="cursor-pointer hover:bg-black rounded px-2 py-1 transition duration-300">
               Blood Request
@@ -184,22 +224,36 @@ const Navbar = () => {
         </ul>
       </div>
 
-      {/* Desktop + Tablet Login/Register Buttons */}
-      <div className="navbar-end hidden md:flex gap-2">
-        <Link
-          to="/register"
-          className="btn bg-white text-red-800 hover:bg-black hover:text-white transition duration-300 
-               md:px-3 md:py-1 md:text-sm lg:px-4 lg:py-2 lg:text-base"
-        >
-          Register
-        </Link>
-        <Link
-          to="/login"
-          className="btn bg-white text-red-800 hover:bg-black hover:text-white transition duration-300
-               md:px-3 md:py-1 md:text-sm lg:px-4 lg:py-2 lg:text-base"
-        >
-          Login
-        </Link>
+      {/* Desktop + Tablet User Info */}
+      <div className="navbar-end hidden md:flex gap-2 items-center">
+        {user ? (
+          <>
+            <span className="text-white font-semibold truncate max-w-[200px]">
+              {user.email}
+            </span>
+            <button
+              onClick={logoutUser}
+              className="btn bg-white text-red-800 hover:bg-black hover:text-white transition duration-300"
+            >
+              Logout
+            </button>
+          </>
+        ) : (
+          <>
+            <Link
+              to="/register"
+              className="btn bg-white text-red-800 hover:bg-black hover:text-white transition duration-300"
+            >
+              Register
+            </Link>
+            <Link
+              to="/login"
+              className="btn bg-white text-red-800 hover:bg-black hover:text-white transition duration-300"
+            >
+              Login
+            </Link>
+          </>
+        )}
       </div>
     </div>
   );

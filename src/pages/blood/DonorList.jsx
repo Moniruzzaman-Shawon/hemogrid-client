@@ -15,23 +15,23 @@ const DonorList = () => {
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const donorsPerPage = 10; // match backend pagination
+  const donorsPerPage = 10;
 
-  // Fetch donors from API with filters and pagination
+  // Debounced search
+  const [debouncedSearch, setDebouncedSearch] = useState(search);
+
+  // Fetch donors from API
   const fetchDonors = async (page = 1) => {
     setLoading(true);
     setError("");
 
     try {
-      const params = {
-        page,
-      };
+      const params = { page };
       if (bloodGroup !== "All") params.blood_group = bloodGroup;
       if (showAvailable) params.availability_status = "available";
-      if (search.trim() !== "") params.search = search.trim();
+      if (debouncedSearch.trim() !== "") params.search = debouncedSearch.trim();
 
       const res = await apiClient.get("/auth/donors/", { params });
-
       setDonors(res.data.results || []);
       setTotalPages(Math.ceil(res.data.count / donorsPerPage));
       setCurrentPage(page);
@@ -43,12 +43,16 @@ const DonorList = () => {
     }
   };
 
+  // Debounce input
   useEffect(() => {
-    fetchDonors(1); // fetch first page initially
-  }, [showAvailable, bloodGroup, search]);
+    const handler = setTimeout(() => setDebouncedSearch(search), 500);
+    return () => clearTimeout(handler);
+  }, [search]);
 
-  if (loading) return <p className="text-center mt-10">Loading donors...</p>;
-  if (error) return <p className="text-center mt-10 text-red-500">{error}</p>;
+  // Fetch donors when filters or debounced search change
+  useEffect(() => {
+    fetchDonors(1);
+  }, [showAvailable, bloodGroup, debouncedSearch]);
 
   return (
     <div className="p-6">
@@ -102,7 +106,7 @@ const DonorList = () => {
         )}
       </div>
 
-      {/* Pagination Controls */}
+      {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex justify-center items-center mt-6 gap-2">
           <button
