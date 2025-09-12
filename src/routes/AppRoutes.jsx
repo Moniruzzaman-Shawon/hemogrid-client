@@ -12,6 +12,7 @@ import AdminLayout from "../components/layouts/AdminLayout";
 import { useAuthContext } from "../context/AuthContext";
 import BloodRequestList from "../pages/blood/BloodRequestList";
 import DonorList from "../pages/blood/DonorList";
+import CreateBloodRequest from "../pages/blood/CreateBloodRequest";
 
 // ProtectedRoute component
 const ProtectedRoute = ({ children, role }) => {
@@ -38,6 +39,7 @@ const AppRoutes = () => {
     <Route path="/aboutUs" element={<AboutUs />} />
     <Route path="/contact" element={<Contact />} />
     <Route path="/blood-requests" element={<BloodRequestList />} />
+    <Route path="/create-blood-requests" element={<CreateBloodRequest />} />
     <Route path="/donors" element={<DonorList />} />
   </Route>
 

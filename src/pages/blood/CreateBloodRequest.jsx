@@ -1,87 +1,114 @@
 import { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import apiClient from "../../services/apiClient";
 
 const CreateBloodRequest = () => {
-  const [formData, setFormData] = useState({
-    blood_group: "",
-    district: "",
-    units: 1,
-    message: "",
-  });
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState("");
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { donorId, donorName } = location.state || {}; // passed from donor card
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  const [recipientName, setRecipientName] = useState("");
+  const [recipientPhone, setRecipientPhone] = useState("");
+  const [recipientAddress, setRecipientAddress] = useState("");
+  const [bloodGroup, setBloodGroup] = useState("");
+  const [message, setMessage] = useState("");
+  const [success, setSuccess] = useState("");
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
     try {
-      await apiClient.post("/blood-requests/blood-requests/create/", formData);
-      setSuccess("Blood request created successfully!");
-      setFormData({ blood_group: "", district: "", units: 1, message: "" });
+      const payload = {
+        donor: donorId,
+        donor_name: donorName,
+        recipient_name: recipientName,
+        recipient_phone: recipientPhone,
+        recipient_address: recipientAddress,
+        blood_group: bloodGroup,
+        message,
+      };
+
+      await apiClient.post("/blood-requests/blood-requests/create/", payload); 
+      setSuccess("Blood request sent successfully!");
+      setError("");
+
+      // Reset form
+      setRecipientName("");
+      setRecipientPhone("");
+      setRecipientAddress("");
+      setBloodGroup("");
+      setMessage("");
+
+      // Optionally redirect to My Requests page
+      // navigate("/blood-requests/my-requests");
     } catch (err) {
-      console.error("Error creating blood request:", err);
-    } finally {
-      setLoading(false);
+      console.error(err);
+      setError("Failed to send request. Please try again.");
+      setSuccess("");
     }
   };
 
   return (
-    <div className="p-4 max-w-md mx-auto">
-      <h2 className="text-2xl font-bold mb-4">Create Blood Request</h2>
-      {success && <p className="text-green-600 mb-2">{success}</p>}
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <select
-          name="blood_group"
-          value={formData.blood_group}
-          onChange={handleChange}
+    <div className="max-w-lg mx-auto p-6 bg-white shadow-lg rounded-lg mt-10">
+      <h2 className="text-2xl font-bold mb-4 text-red-700">
+        Request Blood from {donorName || "Donor"}
+      </h2>
+
+      {success && <p className="text-green-600 mb-3">{success}</p>}
+      {error && <p className="text-red-600 mb-3">{error}</p>}
+
+      <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+        <input
+          type="text"
+          placeholder="Your Name"
+          value={recipientName}
+          onChange={(e) => setRecipientName(e.target.value)}
           required
-          className="w-full p-2 border rounded"
+          className="p-2 border border-gray-300 rounded-lg"
+        />
+        <input
+          type="text"
+          placeholder="Your Phone"
+          value={recipientPhone}
+          onChange={(e) => setRecipientPhone(e.target.value)}
+          required
+          className="p-2 border border-gray-300 rounded-lg"
+        />
+        <input
+          type="text"
+          placeholder="Your Address"
+          value={recipientAddress}
+          onChange={(e) => setRecipientAddress(e.target.value)}
+          required
+          className="p-2 border border-gray-300 rounded-lg"
+        />
+        <select
+          value={bloodGroup}
+          onChange={(e) => setBloodGroup(e.target.value)}
+          required
+          className="p-2 border border-gray-300 rounded-lg"
         >
           <option value="">Select Blood Group</option>
           <option value="A+">A+</option>
           <option value="A-">A-</option>
           <option value="B+">B+</option>
           <option value="B-">B-</option>
-          <option value="O+">O+</option>
-          <option value="O-">O-</option>
           <option value="AB+">AB+</option>
           <option value="AB-">AB-</option>
+          <option value="O+">O+</option>
+          <option value="O-">O-</option>
         </select>
-        <input
-          type="text"
-          name="district"
-          placeholder="District"
-          value={formData.district}
-          onChange={handleChange}
-          className="w-full p-2 border rounded"
-          required
-        />
-        <input
-          type="number"
-          name="units"
-          min="1"
-          value={formData.units}
-          onChange={handleChange}
-          className="w-full p-2 border rounded"
-          required
-        />
         <textarea
-          name="message"
-          placeholder="Additional message"
-          value={formData.message}
-          onChange={handleChange}
-          className="w-full p-2 border rounded"
+          placeholder="Optional message"
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          className="p-2 border border-gray-300 rounded-lg"
         />
         <button
           type="submit"
-          disabled={loading}
-          className="w-full bg-red-800 text-white py-2 rounded hover:bg-black transition"
+          className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-200"
         >
-          {loading ? "Creating..." : "Create Request"}
+          Send Request
         </button>
       </form>
     </div>

@@ -70,7 +70,7 @@ const Navbar = () => {
                   </li>
                   <li>
                     <Link
-                      to="/blood-requests"
+                      to="/create-blood-requests"
                       className="hover:bg-red-100 rounded transition duration-200"
                     >
                       Request Blood
@@ -149,7 +149,7 @@ const Navbar = () => {
               </li>
               <li>
                 <Link
-                  to="/blood-requests"
+                  to="/create-blood-requests"
                   className="block px-4 py-2 hover:bg-black rounded transition duration-200"
                 >
                   Request Blood
