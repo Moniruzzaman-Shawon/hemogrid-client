@@ -1,12 +1,19 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import InputField from "../../components/ui/InputField.jsx";
 import { useState } from "react";
 import { useAuthContext } from "../../context/AuthContext";
+import { resendVerification } from "../../services/authServices";
+import { useToast } from "../../components/ui/Toast.jsx";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const { loginUser } = useAuthContext();
+  const [submitting, setSubmitting] = useState(false);
+  const [canResend, setCanResend] = useState(false);
+  const [resending, setResending] = useState(false);
+  const toast = useToast();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -19,6 +26,7 @@ const Login = () => {
     setError("");
 
     try {
+      setSubmitting(true);
       await loginUser(email, password);
 
       // Redirect back to original page or dashboard
@@ -36,7 +44,26 @@ const Login = () => {
         navigate("/dashboard", { replace: true });
       }
     } catch (err) {
-      setError(err.response?.data?.detail || err.message || "Login failed");
+      const payload = err.response?.data || {};
+      const detail = payload?.detail || err.message || "Login failed";
+      setError(detail);
+      setCanResend(/verify/i.test(detail) || payload?.code === "inactive_or_unverified");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleResend = async () => {
+    if (!email) return;
+    try {
+      setResending(true);
+      await resendVerification(email.toLowerCase());
+      toast.success("Verification email sent if account is unverified.");
+      setCanResend(false);
+    } catch (e) {
+      toast.error("Failed to send verification email.");
+    } finally {
+      setResending(false);
     }
   };
 
@@ -62,39 +89,72 @@ const Login = () => {
         </h2>
 
         <form onSubmit={handleLogin} className="space-y-4">
-          <input
+          <InputField
+            label="Email"
+            name="email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="you@example.com"
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-800"
             required
+            placeholder="you@example.com"
           />
-          <input
+          <InputField
+            label="Password"
+            name="password"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="********"
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-800"
             required
+            placeholder="********"
+            disabled={submitting}
           />
           <button
             type="submit"
-            className="w-full py-2 bg-red-800 text-white font-semibold rounded-lg hover:bg-black transition duration-300"
+            disabled={submitting}
+            className="btn-red w-full disabled:opacity-50 flex items-center justify-center gap-2"
           >
-            Login
+            {submitting && (
+              <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+              </svg>
+            )}
+            {submitting ? "Logging in..." : "Login"}
           </button>
-          {error && <p className="text-red-600 text-sm mt-1">{error}</p>}
+          {error && (
+            <div className="mt-2">
+              <p className="text-red-600 text-sm">{error}</p>
+              {canResend && (
+                <button
+                  type="button"
+                  onClick={handleResend}
+                  disabled={resending}
+                  className="mt-2 text-sm text-red-800 font-semibold hover:underline disabled:opacity-50"
+                >
+                  {resending ? "Sending..." : "Resend verification email"}
+                </button>
+              )}
+            </div>
+          )}
         </form>
 
-        <div className="text-center mt-4 text-gray-600">
-          Don’t have an account?{" "}
+        <div className="flex items-center justify-between mt-4 text-gray-600">
           <Link
-            to="/register"
-            className="text-red-800 font-semibold hover:underline"
+            to="/forgot-password"
+            className="text-sm text-red-800 font-semibold hover:underline"
           >
-            Register
+            Forgot password?
           </Link>
+          <div>
+            Don’t have an account?{" "}
+            <Link
+              to="/register"
+              className="text-red-800 font-semibold hover:underline"
+            >
+              Register
+            </Link>
+            {/* Resend verification is shown above only when needed */}
+          </div>
         </div>
       </div>
     </div>

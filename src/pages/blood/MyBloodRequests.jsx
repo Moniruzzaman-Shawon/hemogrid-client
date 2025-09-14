@@ -9,7 +9,9 @@ const MyBloodRequests = () => {
   const fetchMyRequests = async () => {
     try {
       const res = await apiClient.get("/blood-requests/my-requests/");
-      setRequests(res.data);
+      // Handle paginated response from Django REST Framework
+      const requestsData = res.data.results || res.data;
+      setRequests(Array.isArray(requestsData) ? requestsData : []);
     } catch (err) {
       console.error("Error fetching your blood requests:", err);
     } finally {
@@ -25,9 +27,13 @@ const MyBloodRequests = () => {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
-      {requests.map((request) => (
-        <BloodRequestCard key={request.id} request={request} />
-      ))}
+      {Array.isArray(requests) && requests.length > 0 ? (
+        requests.map((request) => (
+          <BloodRequestCard key={request.id} request={request} />
+        ))
+      ) : (
+        <p className="col-span-full text-center text-gray-600">No blood requests found.</p>
+      )}
     </div>
   );
 };

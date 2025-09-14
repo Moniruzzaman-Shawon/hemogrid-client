@@ -1,2 +1,8 @@
 @import "tailwindcss";
 @plugin "daisyui";
+
+@layer components {
+  .btn-red {
+    @apply inline-flex items-center justify-center px-4 py-2 rounded-lg font-semibold text-white bg-red-800 hover:bg-black shadow-sm active:scale-95 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-700 focus-visible:ring-offset-1;
+  }
+}

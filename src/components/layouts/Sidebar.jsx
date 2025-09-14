@@ -9,6 +9,8 @@ const Sidebar = ({ role }) => {
     { name: "Donate Blood", path: "/create-blood-requests" },
 
     // Dashboard nested links
+    { name: "Dashboard", path: "/dashboard" },
+    { name: "Donor Dashboard", path: "/dashboard/donor" },
     { name: "Profile", path: "/dashboard/profile" },
     { name: "Change Password", path: "/dashboard/manage-passwords" },
   ];

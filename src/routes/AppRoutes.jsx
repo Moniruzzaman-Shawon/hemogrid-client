@@ -5,6 +5,7 @@ import AdminLayout from "../components/layouts/AdminLayout";
 import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
 import VerifyEmail from "../pages/auth/VerifyEmail";
+import ResendVerification from "../pages/auth/ResendVerification";
 
 import Home from "../pages/Home/Home";
 import AboutUs from "../pages/AboutUs";
@@ -12,6 +13,7 @@ import Contact from "../pages/Contact";
 
 import AdminDashboard from "../pages/dashboard/AdminDashboard";
 import UserDashboard from "../pages/dashboard/UserDashboard";
+import DonorDashboard from "../pages/dashboard/DonorDashboard";
 import UserProfile from "../pages/UserProfile";
 
 import BloodRequestList from "../pages/blood/BloodRequestList";
@@ -38,40 +40,40 @@ const ProtectedRoute = ({ children, role }) => {
   return children;
 };
 
+// Public-only route: if logged in, redirect to dashboard
+const PublicOnlyRoute = ({ children }) => {
+  const { user } = useAuthContext();
+  if (user) return <Navigate to="/dashboard" replace />;
+  return children;
+};
+
 // Layout for nested dashboard routes
 const DashboardLayout = () => <Outlet />;
 
 const AppRoutes = () => {
   return (
     <Routes>
-      {/* Public Routes */}
-      <Route element={<MainLayout />}>
-        <Route path="/" element={<Home />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/verify-email/:uid/:token" element={<VerifyEmail />} />
-        <Route path="/aboutUs" element={<AboutUs />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/blood-requests" element={<BloodRequestList />} />
-        <Route path="/donors" element={<DonorList />} />
-
-        {/* Protected Create Blood Request */}
-        <Route
-          path="/create-blood-requests"
-          element={
-            <ProtectedRoute>
-              <CreateBloodRequest />
-            </ProtectedRoute>
-          }
-        />
-
-        {/* Password Routes */}
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route
-          path="/reset-password/:uidb64/:token"
-          element={<ResetPassword />}
-        />
+      {/* Public Routes with MainLayout */}
+      <Route path="/" element={<MainLayout />}>
+        <Route index element={<Home />} />
+        <Route path="aboutUs" element={<AboutUs />} />
+        <Route path="contact" element={<Contact />} />
+        <Route path="blood-requests" element={<BloodRequestList />} />
+        <Route path="donors" element={<DonorList />} />
+        <Route path="forgot-password" element={<ForgotPassword />} />
+        <Route path="reset-password/:uidb64/:token" element={<ResetPassword />} />
+        <Route path="reset-password/:uidb64/:token/" element={<ResetPassword />} />
       </Route>
+
+      {/* Auth Routes */}
+      <Route path="/register" element={<PublicOnlyRoute><Register /></PublicOnlyRoute>} />
+      <Route path="/login" element={<PublicOnlyRoute><Login /></PublicOnlyRoute>} />
+      <Route path="/verify-email/:uidb64/:token" element={<VerifyEmail />} />
+      <Route path="/verify-email/:uidb64/:token/" element={<VerifyEmail />} />
+      <Route path="/resend-verification" element={<ResendVerification />} />
+
+      {/* Protected Routes */}
+      <Route path="/create-blood-requests" element={<ProtectedRoute><CreateBloodRequest /></ProtectedRoute>} />
 
       {/* Protected Dashboard Routes */}
       <Route
@@ -84,6 +86,7 @@ const AppRoutes = () => {
       >
         {/* User Routes */}
         <Route index element={<UserDashboard />} />
+        <Route path="donor" element={<DonorDashboard />} />
         <Route path="profile" element={<UserProfile />} />
         <Route path="manage-passwords" element={<ChangePassword />} />
 

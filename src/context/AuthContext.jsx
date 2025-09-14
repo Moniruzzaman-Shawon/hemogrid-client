@@ -31,19 +31,15 @@ export const AuthProvider = ({ children }) => {
       // Login endpoint
       const res = await apiClient.post("auth/login/", { email, password });
       const tokens = res.data;
+      const userData = res.data.user; // User data comes from JWT response
+      
       setAuthTokens(tokens);
+      setUser(userData);
       localStorage.setItem("authTokens", JSON.stringify(tokens));
-
-      // Fetch profile
-      const profileRes = await apiClient.get("/auth/donor-profile/", {
-        headers: { Authorization: `Bearer ${tokens.access}` },
-      });
-
-      setUser(profileRes.data);
-      localStorage.setItem("userData", JSON.stringify(profileRes.data));
+      localStorage.setItem("userData", JSON.stringify(userData));
 
       // Role-based redirect
-      if (profileRes.data.role === "admin") {
+      if (userData.role === "admin") {
         navigate("/dashboard/admin");
       } else {
         navigate("/dashboard");
@@ -62,8 +58,13 @@ export const AuthProvider = ({ children }) => {
     navigate("/login");
   };
 
+  const updateUser = (userData) => {
+    setUser(userData);
+    localStorage.setItem("userData", JSON.stringify(userData));
+  };
+
   return (
-    <AuthContext.Provider value={{ user, authTokens, loginUser, logoutUser }}>
+    <AuthContext.Provider value={{ user, authTokens, loginUser, logoutUser, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

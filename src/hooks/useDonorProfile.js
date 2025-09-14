@@ -3,7 +3,7 @@ import apiClient from "../services/apiClient";
 import { useAuthContext } from "../context/AuthContext";
 
 const useDonorProfile = () => {
-  const { user, token } = useAuthContext();
+  const { user } = useAuthContext();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -14,9 +14,7 @@ const useDonorProfile = () => {
     setLoading(true);
     setError("");
     try {
-      const res = await apiClient.get("/auth/donor-profile/", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await apiClient.get("/auth/donor-profile/");
       setProfile(res.data);
     } catch (err) {
       setError(err.response?.data?.detail || "Failed to load profile.");
@@ -25,16 +23,11 @@ const useDonorProfile = () => {
     }
   };
 
-  // Update profile manually
+  // Update profile manually (use PATCH for partial updates; let axios set headers)
   const updateProfile = async (formData) => {
     try {
-      const res = await apiClient.put("/auth/donor-profile/", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setProfile(res.data); // update only after save
+      const res = await apiClient.patch("/auth/donor-profile/", formData);
+      setProfile(res.data);
       return { success: true, data: res.data };
     } catch (err) {
       return {

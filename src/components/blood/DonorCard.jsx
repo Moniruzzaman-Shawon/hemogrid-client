@@ -6,15 +6,35 @@ const DonorCard = ({ donor }) => {
   const navigate = useNavigate();
   const { user } = useAuthContext();
 
-  const defaultImage =
-    "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+  const defaultImage = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+
+  const resolveImageUrl = (d) => {
+    let v = d?.profile_picture ?? d?.picture ?? d?.avatar ?? d?.image;
+    if (v && typeof v === "object") {
+      v = v.secure_url || v.url || "";
+    }
+    if (typeof v === "string" && v.length > 0) {
+      if (/^https?:\/\//i.test(v)) return v;
+      // Handle relative URLs like "/media/..." or "media/..."
+      if (v.startsWith("/")) return `http://127.0.0.1:8000${v}`;
+      return `http://127.0.0.1:8000/${v}`;
+    }
+    return defaultImage;
+  };
 
   // Dynamic state for availability
-  const [isAvailable, setIsAvailable] = useState(donor.availability_status);
+  const computeAvailable = (v) => {
+    if (v == null) return false;
+    if (typeof v === "boolean") return v;
+    const s = String(v).toLowerCase();
+    return s === "available" || s === "true";
+  };
+
+  const [isAvailable, setIsAvailable] = useState(computeAvailable(donor.availability_status));
 
   // Optional: update availability if donor prop changes
   useEffect(() => {
-    setIsAvailable(donor.availability_status);
+    setIsAvailable(computeAvailable(donor.availability_status));
   }, [donor.availability_status]);
 
   const handleRequestBlood = () => {
@@ -38,12 +58,15 @@ const DonorCard = ({ donor }) => {
   return (
     <div className="bg-white shadow-md rounded-lg p-5 border border-gray-200 hover:shadow-xl transition duration-300 flex flex-col items-center text-center">
       <img
-        src={donor.picture || defaultImage}
+        src={resolveImageUrl(donor)}
+        onError={(e) => {
+          e.currentTarget.src = defaultImage;
+        }}
         alt={donor.full_name}
         className="w-24 h-24 rounded-full object-cover border border-gray-300 mb-3"
       />
       <h3 className="text-xl font-semibold mb-2 text-red-700">
-        {donor.full_name}
+        {donor.full_name || donor.email}
       </h3>
       <p className="text-gray-700 mb-1">
         <span className="font-medium">Age:</span> {donor.age}
@@ -54,12 +77,14 @@ const DonorCard = ({ donor }) => {
       <p className="text-gray-700 mb-1">
         <span className="font-medium">Address:</span> {donor.address}
       </p>
-      <p className="text-gray-700 mb-1">
-        <span className="font-medium">Phone:</span> {donor.phone || "N/A"}
-      </p>
+      {donor.phone && (
+        <p className="text-gray-700 mb-1">
+          <span className="font-medium">Phone:</span> {donor.phone}
+        </p>
+      )}
       <p className="text-gray-700 mb-1">
         <span className="font-medium">Last Donation:</span>{" "}
-        {donor.last_donation_date || "Never"}
+        {donor.last_donation_date ? new Date(donor.last_donation_date).toLocaleDateString() : "Never"}
       </p>
       <p className="text-sm mt-1 mb-3">
         <span
