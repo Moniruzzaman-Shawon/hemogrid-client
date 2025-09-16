@@ -10,7 +10,7 @@ HemoGrid is a comprehensive blood donation web application designed to streamlin
 
 ## 🌐 Live Demo
 
-*([Visit the website](https://hemogrid-client.vercel.app/)*
+*[Visit the website](https://hemogrid-client.vercel.app/)*
 
 ---
 
