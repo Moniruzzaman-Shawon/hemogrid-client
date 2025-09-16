@@ -154,7 +154,7 @@ Axios instance with interceptors for JWT token management. Example endpoints:
 
 ## 🚀 Deployment
 
-- Frontend: Vercel / Netlify
+- Frontend: Vercel 
 - CI/CD: GitHub Actions or similar
 - Monitor errors (e.g., Sentry)
 - Unit/Integration tests: Jest + React Testing Library
