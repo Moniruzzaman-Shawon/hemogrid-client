@@ -1,5 +1,3 @@
-# Untitled
-
 # 🩸 HemoGrid - Blood Donation Web Application (Frontend)
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
