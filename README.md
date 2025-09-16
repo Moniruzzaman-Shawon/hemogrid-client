@@ -25,7 +25,7 @@ HemoGrid is a comprehensive blood donation web application designed to streamlin
 ---
 
 ## 📂 Project Structure
-
+````
 src/
 ├── assets/ # Images, logos, icons
 ├── components/ # Reusable UI components
@@ -35,9 +35,8 @@ src/
 ├── context/ # Auth context / global state
 ├── utils/ # Helpers (token storage, formatters)
 └── App.jsx
+````
 
-yaml
-Copy code
 
 ---
 
